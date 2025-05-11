@@ -1,4 +1,23 @@
 #!/usr/bin/env bash
 
-git clone https://github.com/junegunn/fzf.git $HOME/personal/fzf
-$HOME/personal/fzf/install
+# Install eza (modern ls replacement)
+echo "=== Installing eza (modern ls replacement) ==="
+sudo apt install -y eza || {
+  echo "eza not available in apt, installing from source"
+  # Alternative method if eza is not in apt repositories
+  mkdir -p $HOME/.local/bin
+  curl -s https://api.github.com/repos/eza-community/eza/releases/latest | grep "browser_download_url.*eza_x86_64-unknown-linux-gnu.tar.gz" | cut -d : -f 2,3 | tr -d \" | wget -q -i -
+  tar -xzf eza_x86_64-unknown-linux-gnu.tar.gz
+  mv eza $HOME/.local/bin/
+  rm eza_x86_64-unknown-linux-gnu.tar.gz
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.zshrc
+}
+
+# Install fzf (fuzzy finder)
+echo "=== Installing fzf ==="
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/personal/fzf
+$HOOME/personal/fzf/install --all
+
+# Install zoxide (smart cd command)
+echo "=== Installing zoxide ==="
+curl -sS https://webinstall.dev/zoxide | bash
