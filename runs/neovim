@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-git clone -b v0.10.2 https://github.com/neovim/neovim.git $HOME/personal/neovim
+echo "===== Build Neovim ====="
+git clone -b v0.11.1 https://github.com/neovim/neovim.git $HOME/personal/neovim
 sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
 
 cd $HOME/personal/neovim
 make CMAKE_BUILD_TYPE=RelWithDebInfo
 sudo make install
 
+echo "===== Install LazyVim ====="
 # required
 mv ~/.config/nvim ~/.config/nvim{,.bak}
 
@@ -18,3 +20,5 @@ mv ~/.cache/nvim{,.bak}
 rm -rf
 git clone https://github.com/LazyVim/starter ~/.config/nvim
 rm -rf ~/.config/nvim/.git
+
+echo "===== OPEN nvim, wait for installation to complete then run dev-env script to copy my config ====="
