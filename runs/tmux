@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+echo "=== Install Tmux ==="
+sudo apt install tmux
+
+echo "=== Install Tmux Plugin Manager ==="
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+echo "=== copy config with dev-env script and then <prefiz>+I ==="
