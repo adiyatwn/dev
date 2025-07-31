@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 echo "===== Build Neovim ====="
-git clone -b v0.11.1 https://github.com/neovim/neovim.git $HOME/personal/neovim
-sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
+git clone -b v0.11.3 https://github.com/neovim/neovim.git $HOME/personal/neovim
+sudo pacman -S --needed cmake gettext lua
 
 cd $HOME/personal/neovim
 make CMAKE_BUILD_TYPE=RelWithDebInfo
