@@ -1,7 +1,27 @@
 #!/usr/bin/env bash
 
-FILE=$(fzf --preview="cat {}")
+# Use `head` for a simple preview that won't mess up the terminal with binary data
+FILE=$(fzf --preview="head -c 2000 {}")
 
 if [ -n "$FILE" ]; then
-  nvim "$FILE"
+  extension=$(echo "${FILE##*.}" | tr '[:upper:]' '[:lower:]')
+
+  case "$extension" in
+  # Group all non-text file types
+  mp4 | mkv | avi | mov | flv | wmv | webm | ts | mts | m2ts | 3gp | ogv | vob | \
+    jpg | jpeg | png | gif | webp | bmp | svg | tif | tiff | ico | cr2 | nef | arw | dng | psd | ai | eps | \
+    mp3 | wav | flac | ogg | m4a | opus | aac | wma | \
+    pdf | gz | zip | rar | tar | iso | bin | exe | blend | \
+    docx | xlsx | pptx | doc | xls | ppt | odt | ods | odp | \
+    epub | mobi | azw | \
+    ttf | otf | woff | woff2 | \
+    obj | stl | fbx | dwg | dxf | deb | rpm | jar)
+    xdg-open "$FILE" &
+    disown
+    ;;
+  # Default action for all other files
+  *)
+    nvim "$FILE"
+    ;;
+  esac
 fi
