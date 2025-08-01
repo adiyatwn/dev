@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+FILE=$(fzf --preview="cat {}")
+
+if [ -n "$FILE" ]; then
+  nvim "$FILE"
+fi
