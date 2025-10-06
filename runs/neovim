@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "===== Build Neovim ====="
-git clone -b v0.11.3 https://github.com/neovim/neovim.git $HOME/personal/neovim
+git clone -b v0.11.4 https://github.com/neovim/neovim.git $HOME/personal/neovim
 sudo pacman -S --needed cmake gettext lua
 
 cd $HOME/personal/neovim

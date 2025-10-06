@@ -8,6 +8,7 @@ return {
         "typescript-language-server",
         "css-lsp",
         "prettier",
+        "clangd",
       })
     end,
   },
