@@ -16,7 +16,7 @@ sudo apt install -y eza || {
 # Install fzf (fuzzy finder)
 echo "=== Installing fzf ==="
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/personal/fzf
-$HOOME/personal/fzf/install --all
+$HOME/personal/fzf/install --all
 
 # Install zoxide (smart cd command)
 echo "=== Installing zoxide ==="
