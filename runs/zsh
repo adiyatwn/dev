@@ -93,9 +93,6 @@ alias ld='eza -lhD --icons=auto'  # long list dirs
 alias v='nvim'                    # nvim alias
 alias vim='nvim'                  # vim alias (use nvim instead)
 
-# Key bindings (for custom actions)
-bindkey -s '^f' '$HOME/.local/scripts/tmux-sessionizer\n'
-
 # Load Powerlevel10k settings if available
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -106,6 +103,10 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 # fzf integration
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Key bindings (for custom actions)
+bindkey -s '^f' '$HOME/.local/scripts/tmux-sessionizer\n'
+bindkey -s '^t' '$HOME/.local/scripts/find-and-open\n'
 
 EOF
 

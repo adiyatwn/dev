@@ -57,3 +57,6 @@ copy_file .ready-tmux $HOME
 
 # Specific config (hypr for omarchy's hyprland config)
 # copy_dir .config_specific $HOME/.config
+#
+# Specific config (hypr & ghostty for HyDE)
+# copy_dir .config_HyDE $HOME/.config

@@ -78,17 +78,16 @@ return {
   -- statusline
   {
     "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    opts = {
-      options = {
-        theme = "catppuccin",
-      },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    options = {
+      theme = "catppuccin",
+      -- ... the rest of your lualine config
     },
   },
 
   -- animations
   {
-    "echasnovski/mini.animate",
+    "nvim-mini/mini.animate",
     event = "VeryLazy",
     opts = function(_, opts)
       opts.scroll = {

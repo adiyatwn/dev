@@ -48,7 +48,7 @@ keymap.set("n", "<C-u>", "<C-u>zz")
 
 -- util keymaps
 keymap.set("n", "<leader>x", ":!chmod +x %<CR>")
-keymap.set("n", "<C-f>", ":silent !tmux neww ~/scripts/tmux-sessionizer<CR>")
+keymap.set("n", "<C-f>", ":silent !tmux neww ~/.local/scripts/tmux-sessionizer<CR>")
 
 -- Open Oil buffer
 vim.keymap.set("n", "-", ":Oil<CR>", { desc = "Go to oil buffer" })
@@ -103,3 +103,8 @@ keymap.set("n", "<C-a>", "ggV<S-G>", { desc = "block all text" })
 
 -- LazyGit
 keymap.set("n", "<leader>gg", ":LazyGit<CR>", { desc = "Open Lazygit" })
+
+-- Fix LSP Rename: Force <leader>cr to use the working LSP function
+keymap.set("n", "<leader>cr", function()
+  vim.lsp.buf.rename()
+end, { desc = "Rename variable (LSP Override)" })
