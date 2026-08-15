@@ -1,27 +1,28 @@
 #!/usr/bin/env bash
 
-echo "===== Build Neovim ====="
-# [Ubuntu] Prerequisite
-sudo apt-get install ninja-build gettext cmake unzip curl
-# [Arch] Prerequisite
-# sudo pacman -S base-devel cmake unzip ninja curl
-git clone -b v0.11.5 https://github.com/neovim/neovim.git $HOME/personal/neovim
+set -e
 
-cd $HOME/personal/neovim
+echo "===== Build Neovim from Source ====="
+
+if command -v apt-get &> /dev/null; then
+  sudo apt-get update
+  sudo apt-get install -y ninja-build gettext cmake unzip curl build-essential git
+elif command -v pacman &> /dev/null; then
+  sudo pacman -S --noconfirm base-devel cmake unzip ninja curl gettext git
+fi
+
+mkdir -p "$HOME/personal"
+
+if [ ! -d "$HOME/personal/neovim" ]; then
+  git clone -b v0.11.5 https://github.com/neovim/neovim.git "$HOME/personal/neovim"
+else
+  cd "$HOME/personal/neovim"
+  git fetch --tags
+  git checkout v0.11.5
+fi
+
+cd "$HOME/personal/neovim"
 make CMAKE_BUILD_TYPE=RelWithDebInfo
 sudo make install
 
-echo "===== Install LazyVim ====="
-# required
-mv ~/.config/nvim ~/.config/nvim{,.bak}
-
-# optional but recommended
-mv ~/.local/share/nvim{,.bak}
-mv ~/.local/state/nvim{,.bak}
-mv ~/.cache/nvim{,.bak}
-
-rm -rf
-git clone https://github.com/LazyVim/starter ~/.config/nvim
-rm -rf ~/.config/nvim/.git
-
-echo "===== [OPTIONAL] OPEN nvim, wait for installation to complete then run dev-env script to copy my config ====="
+echo "===== Neovim build complete! Run ./dev-env to link your config. ====="

@@ -2,42 +2,52 @@
 
 set -e
 
-echo "=== Starting zsh setup (Ubuntu) ==="
-
-echo "=== Updating package lists ==="
-sudo apt update && sudo apt upgrade -y
+echo "=== Starting zsh setup ==="
 
 echo "=== Installing essential packages ==="
-sudo apt install -y zsh git curl wget unzip fzf zoxide eza
+if command -v apt-get &> /dev/null; then
+  sudo apt-get update
+  sudo apt-get install -y zsh git curl wget unzip fzf zoxide eza
+elif command -v pacman &> /dev/null; then
+  sudo pacman -S --noconfirm zsh git curl wget unzip fzf zoxide eza
+fi
 
 echo "=== Installing Oh My Zsh ==="
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+else
+  echo "Oh My Zsh already installed."
+fi
+
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 echo "=== Installing Powerlevel10k theme ==="
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
+fi
 
 echo "=== Creating directories for plugins and completions ==="
-mkdir -p ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins
-mkdir -p $HOME/.zsh/completions
+mkdir -p "$ZSH_CUSTOM/plugins"
+mkdir -p "$HOME/.zsh/completions"
 
 echo "=== Installing plugins ==="
 
-git clone https://github.com/zsh-users/zsh-autosuggestions \
-  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+clone_plugin() {
+  local repo="$1"
+  local dest="$2"
+  if [ ! -d "$dest" ]; then
+    git clone "$repo" "$dest"
+  fi
+}
 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-
-git clone https://github.com/chrissicool/zsh-256color \
-  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-256color
-
-git clone https://github.com/zsh-users/zsh-completions \
-  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-completions
+clone_plugin "https://github.com/zsh-users/zsh-autosuggestions" "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+clone_plugin "https://github.com/zsh-users/zsh-syntax-highlighting.git" "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+clone_plugin "https://github.com/chrissicool/zsh-256color" "$ZSH_CUSTOM/plugins/zsh-256color"
+clone_plugin "https://github.com/zsh-users/zsh-completions" "$ZSH_CUSTOM/plugins/zsh-completions"
 
 echo "=== Creating default p10k configuration ==="
-if [ ! -f $HOME/.p10k.zsh ]; then
-cat > $HOME/.p10k.zsh << 'EOF'
+if [ ! -f "$HOME/.p10k.zsh" ]; then
+cat > "$HOME/.p10k.zsh" << 'EOF'
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time)
 POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
@@ -46,7 +56,11 @@ EOF
 fi
 
 echo "=== Setting up .zshrc ==="
-cat > $HOME/.zshrc << 'EOF'
+if [ -f "$HOME/.zshrc" ] && [ ! -f "$HOME/.zshrc.bak" ]; then
+  cp "$HOME/.zshrc" "$HOME/.zshrc.bak"
+fi
+
+cat > "$HOME/.zshrc" << 'EOF'
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -85,7 +99,8 @@ bindkey -s '^t' '$HOME/.local/scripts/find-and-open\n'
 EOF
 
 echo "=== Changing default shell to zsh ==="
-chsh -s $(which zsh)
+if [ "$SHELL" != "$(which zsh)" ]; then
+  chsh -s "$(which zsh)" || true
+fi
 
-echo "=== Setup completed! ==="
-echo "Log out and log back in, or type 'zsh'"
+echo "=== Zsh setup completed! ==="

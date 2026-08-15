@@ -25,6 +25,10 @@ cd ~/dev
 # 2. Run symlink installer script
 ./dev-env
 
+# Optional desktop profile flags:
+./dev-env --hyde        # Link HyDE desktop configs (Ghostty, Hyprland)
+./dev-env --specific    # Link Waybar / Hyprland configs
+
 # Perform a dry-run first (optional)
 ./dev-env --dry
 ```
@@ -33,7 +37,7 @@ cd ~/dev
 
 ## 📦 Software & Dependency Installers (`runs/`)
 
-Use `./run` to execute installer scripts inside `./runs/`:
+Use `./run` to execute installer scripts inside `./runs/` (supports Ubuntu/Debian `apt` and Arch `pacman` automatically):
 
 ```bash
 # Run all dependency installers
@@ -44,7 +48,7 @@ Use `./run` to execute installer scripts inside `./runs/`:
 ```
 
 Available installer scripts in `./runs/`:
-- `libs`: Core Ubuntu build essentials and dependencies.
-- `neovim`: Builds Neovim from source.
-- `tmux`: Installs Tmux and plugins.
-- `zsh`: Configures Zsh shell environment.
+- `libs`: Core development build tools (`build-essential`/`base-devel`, `cmake`, `ninja`, `ripgrep`, `fd`).
+- `neovim`: Builds Neovim from source (`v0.11.5`).
+- `tmux`: Installs Tmux and Tmux Plugin Manager (TPM).
+- `zsh`: Configures Zsh, Oh My Zsh, Powerlevel10k, and essential plugins.

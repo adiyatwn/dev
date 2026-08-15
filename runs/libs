@@ -1,23 +1,13 @@
 #!/usr/bin/env bash
 
-# Install eza (modern ls replacement)
-echo "=== Installing eza (modern ls replacement) ==="
-sudo apt install -y eza || {
-  echo "eza not available in apt, installing from source"
-  # Alternative method if eza is not in apt repositories
-  mkdir -p $HOME/.local/bin
-  curl -s https://api.github.com/repos/eza-community/eza/releases/latest | grep "browser_download_url.*eza_x86_64-unknown-linux-gnu.tar.gz" | cut -d : -f 2,3 | tr -d \" | wget -q -i -
-  tar -xzf eza_x86_64-unknown-linux-gnu.tar.gz
-  mv eza $HOME/.local/bin/
-  rm eza_x86_64-unknown-linux-gnu.tar.gz
-  echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.zshrc
-}
+set -e
 
-# Install fzf (fuzzy finder)
-echo "=== Installing fzf ==="
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/personal/fzf
-$HOME/personal/fzf/install --all
+echo "=== Installing Core Dev Tools & CLI Utilities ==="
 
-# Install zoxide (smart cd command)
-echo "=== Installing zoxide ==="
-curl -sS https://webinstall.dev/zoxide | bash
+if command -v apt-get &> /dev/null; then
+  sudo apt-get update && sudo apt-get install -y build-essential curl wget git unzip ripgrep fd-find
+elif command -v pacman &> /dev/null; then
+  sudo pacman -S --noconfirm base-devel curl wget git unzip ripgrep fd
+fi
+
+echo "=== Core Dev Tools installed ==="

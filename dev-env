@@ -2,11 +2,16 @@
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dry="0"
+link_hyde="0"
+link_specific="0"
 
 while [[ $# > 0 ]]; do
-  if [[ "$1" == "--dry" ]]; then
-    dry="1"
-  fi
+  case "$1" in
+    --dry) dry="1" ;;
+    --hyde) link_hyde="1" ;;
+    --specific) link_specific="1" ;;
+    *) echo "Unknown flag: $1"; exit 1 ;;
+  esac
   shift
 done
 
@@ -63,8 +68,13 @@ link_file .ready-tmux "$HOME"
 mkdir -p "$HOME/.pi"
 link_file .config/pi/agent "$HOME/.pi"
 
-# Specific config (hypr for omarchy's hyprland config)
-# link_dir .config_specific "$HOME/.config"
-#
-# Specific config (hypr & ghostty for HyDE)
-# link_dir .config_HyDE "$HOME/.config"
+# Optional desktop profile configs
+if [[ "$link_specific" == "1" ]]; then
+  log "=== Linking .config_specific ==="
+  link_dir .config_specific "$HOME/.config"
+fi
+
+if [[ "$link_hyde" == "1" ]]; then
+  log "=== Linking .config_HyDE ==="
+  link_dir .config_HyDE "$HOME/.config"
+fi
