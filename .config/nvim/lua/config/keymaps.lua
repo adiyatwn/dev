@@ -92,7 +92,7 @@ keymap.set(
 keymap.set("n", "<leader><F5>", ":UndotreeToggle<CR>", { desc = "Toggle undotree" })
 
 -- Screenkey keymap
-keymap.set("n", "<leader>uk>", "<cmd>Screenkey toggle<CR>", { desc = "Toggle Screenkey" })
+keymap.set("n", "<leader>uk", "<cmd>Screenkey toggle<CR>", { desc = "Toggle Screenkey" })
 
 -- make it rain
 keymap.set("n", "<leader>fml1", "<cmd>CellularAutomaton make_it_rain<CR>")

@@ -1,0 +1,8 @@
+# Pi agent sensitive files and session logs
+.config/pi/agent/auth.json
+.config/pi/agent/sessions/
+.config/pi/agent/models-store.json
+.config/pi/agent/npm/node_modules/
+.config/pi/free*.json
+.config/pi/free.log
+.config/pi/web-search-cache/

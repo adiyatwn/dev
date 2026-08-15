@@ -1,0 +1,11 @@
+{
+  "lastChangelogVersion": "0.84.2",
+  "hideThinkingBlock": false,
+  "packages": [
+    "npm:pi-free",
+    "npm:pi-web-access"
+  ],
+  "defaultProvider": "cline",
+  "defaultModel": "deepseek/deepseek-v4-flash",
+  "defaultThinkingLevel": "high"
+}

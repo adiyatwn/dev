@@ -27,9 +27,9 @@ vim.wo.number = true
 vim.wo.relativenumber = true
 
 -- Tabs
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
 -- Enable mouse mode
@@ -38,7 +38,25 @@ vim.o.mouse = "a"
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.o.clipboard = "unnamedplus"
+if vim.fn.has("wsl") == 1 then
+  vim.g.clipboard = {
+    name = "wsl-clip",
+    copy = {
+      ["+"] = "clip.exe",
+      ["*"] = "clip.exe",
+    },
+    paste = {
+      -- Note: pasting into Nvim in terminal is usually handled by terminal's own paste
+      -- shortcut (e.g., Ctrl+Shift+V in Windows Terminal) but this entry is needed
+      -- for internal Neovim commands to paste from the system clipboard.
+      ["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+      ["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    },
+    cache_enabled = true,
+  }
+  -- Set the default clipboard to the system clipboard
+  vim.opt.clipboard = "unnamedplus"
+end
 
 -- Enable break indent
 vim.o.breakindent = true
