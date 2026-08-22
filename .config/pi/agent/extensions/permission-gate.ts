@@ -51,6 +51,7 @@ const DANGEROUS_PATTERNS: DangerRule[] = [
   { regex: /\bTRUNCATE\s+TABLE\b/i, label: "TRUNCATE TABLE" },
   { regex: /\bkill\s+-9\b/i, label: "kill -9" },
   { regex: /\bshred\b/i, label: "shred (secure delete)" },
+  { regex: /\b\.\w*\.env\b/i, label: "reading/writing .env file" },
 ];
 
 export default function (pi: ExtensionAPI) {

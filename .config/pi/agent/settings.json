@@ -3,9 +3,12 @@
   "hideThinkingBlock": false,
   "packages": [
     "npm:pi-free",
-    "npm:pi-web-access"
+    "npm:pi-web-access",
+    "extensions/dotenv-permission.ts",
+    "npm:pi-subagents"
   ],
   "defaultProvider": "cline",
-  "defaultModel": "deepseek/deepseek-v4-flash",
-  "defaultThinkingLevel": "high"
+  "defaultModel": "stealth/ox-alpha",
+  "defaultThinkingLevel": "high",
+  "theme": "catppuccin"
 }

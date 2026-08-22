@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "missionId": "bea524df-801d-4299-82f0-6b9775c41a4c",
+  "projectRoot": "/home/adi/personal/pi-test",
+  "recordPath": "/home/adi/.pi/agent/missions/projects/b5f9932d14b14777eeb902205ee9ea327a641f9d591a035255e22b07c88d870b/bea524df-801d-4299-82f0-6b9775c41a4c.json",
+  "title": "[prompt redacted]",
+  "status": "completed",
+  "updatedAt": "2026-08-15T16:17:05.197Z",
+  "lastRunId": "e3833b59-2ae4-433f-872d-31a71efeb648"
+}
