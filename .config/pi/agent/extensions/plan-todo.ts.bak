@@ -1,0 +1,265 @@
+/**
+ * plan-todo — global pi extension that tracks to-do tasks from a plan file
+ *
+ * Parses GitHub-style checkboxes (`- [ ]` / `- [x]`, and numbered `1. [ ]`) from
+ * `pi-plan.md` (or `plan.md` fallback) in the current project directory and shows
+ * them in a widget above the editor.
+ *
+ * Display modes:
+ *   • current (default) — progress bar + the current (first uncompleted) task
+ *   • all               — progress bar + every task with [x]/[ ] markers
+ *   • hidden            — widget off
+ *
+ * Controls:
+ *   • `/plan-todo`                        — toggle hide/show (restores last mode)
+ *   • `/plan-todo show|hide|all|current`  — explicit mode
+ *   • `/plan-todo status`                 — print a summary notification
+ *   • Ctrl+Shift+T                        — keyboard shortcut hide/show toggle
+ *
+ * The widget refreshes on session start, session tree navigation, and after every
+ * agent turn, so checking off items in the plan updates it live. Mode + visibility
+ * are persisted as custom session entries so they survive restarts and branches.
+ *
+ * Inspired by the state-persistence pattern of diegopetrucci/pi-extensions `todo`.
+ */
+
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { Text } from "@earendil-works/pi-tui";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+const WIDGET_ID = "plan-todo";
+const STATE_TYPE = "plan-todo-state";
+const PLAN_FILES = ["pi-plan.md", "plan.md"] as const;
+const MAX_TEXT_WIDTH = 88;
+
+type Mode = "current" | "all";
+
+interface Task {
+	text: string;
+	done: boolean;
+}
+
+interface WidgetState {
+	visible: boolean;
+	mode: Mode;
+}
+
+function parseTasks(markdown: string): Task[] {
+	const tasks: Task[] = [];
+	for (const line of markdown.split("\n")) {
+		const match = line.match(/^\s*(?:[-*]|\d+\.)\s\[[ xX]\]\s+(.*)$/);
+		if (match) {
+			tasks.push({ done: /\[[xX]\]/.test(line), text: match[1].trim() });
+		}
+	}
+	return tasks;
+}
+
+function clip(text: string): string {
+	return text.length > MAX_TEXT_WIDTH ? `${text.slice(0, MAX_TEXT_WIDTH - 1)}…` : text;
+}
+
+function findPlanPath(cwd: string): string | undefined {
+	for (const name of PLAN_FILES) {
+		const candidate = join(cwd, name);
+		if (existsSync(candidate)) return candidate;
+	}
+	return undefined;
+}
+
+/** Shared header: `[plan] [###-------] 3/15` */
+function headerLine(tasks: Task[]): string {
+	const done = tasks.filter((task) => task.done).length;
+	const total = tasks.length;
+	const filled = Math.round((done / total) * 10);
+	// ASCII-only so the widget renders correctly in any terminal encoding
+	const bar = "#".repeat(filled) + "-".repeat(10 - filled);
+	const suffix = done === total ? " - plan complete!" : "";
+	return `[plan] [${bar}] ${done}/${total}${suffix}`;
+}
+
+/** Build the widget lines for the plan in `cwd` using the given display mode.
+ *  Returns an empty array when there is no plan file — the widget then stays
+ *  out of the way instead of nagging about a missing file. */
+function buildWidgetLines(cwd: string, mode: Mode): string[] {
+	const planPath = findPlanPath(cwd);
+	if (!planPath) {
+		return [];
+	}
+
+	let markdown: string;
+	try {
+		markdown = readFileSync(planPath, "utf8");
+	} catch (error) {
+		return [`[plan] Failed to read ${planPath}: ${(error as Error).message}`];
+	}
+
+	const tasks = parseTasks(markdown);
+	if (tasks.length === 0) {
+		return [`[plan] ${planPath} has no checkbox tasks`];
+	}
+
+	const lines: string[] = [headerLine(tasks)];
+
+	if (mode === "all") {
+		const firstOpenIndex = tasks.findIndex((task) => !task.done);
+		for (let index = 0; index < tasks.length; index++) {
+			const marker = tasks[index].done ? "[x]" : "[ ]";
+			const pointer = index === firstOpenIndex ? ">" : " ";
+			lines.push(`${pointer} ${marker} ${clip(tasks[index].text)}`);
+		}
+	} else {
+		const current = tasks.find((task) => !task.done);
+		if (current) {
+			lines.push(`> [ ] ${clip(current.text)}`);
+		}
+	}
+
+	return lines;
+}
+
+export default function planTodo(pi: ExtensionAPI) {
+	let visible = true;
+	let mode: Mode = "current";
+
+	function render(ctx: ExtensionContext): void {
+		if (!ctx.hasUI) return;
+		try {
+			const lines = buildWidgetLines(ctx.cwd, mode);
+			ctx.ui.setWidget(
+				WIDGET_ID,
+				visible && lines.length > 0 ? lines : undefined,
+			);
+		} catch {
+			// UI stream may already be destroyed during teardown/reload — ignore
+		}
+	}
+
+	function persist(): void {
+		pi.appendEntry(STATE_TYPE, { visible, mode } satisfies WidgetState);
+	}
+
+	function restore(ctx: ExtensionContext): void {
+		let last: WidgetState | undefined;
+		for (const entry of ctx.sessionManager.getBranch()) {
+			if (entry.type === "custom" && entry.customType === STATE_TYPE) {
+				last = entry.data as WidgetState | undefined;
+			}
+		}
+		if (!last) return;
+		if (typeof last.visible === "boolean") visible = last.visible;
+		if (last.mode === "current" || last.mode === "all") mode = last.mode;
+	}
+
+	/** Apply a command word. Returns a short confirmation message. */
+	function apply(action: string, ctx: ExtensionContext): string | undefined {
+		switch (action) {
+			case "show":
+				visible = true;
+				break;
+			case "hide":
+				visible = false;
+				break;
+			case "toggle":
+				visible = !visible;
+				break;
+			case "all":
+				mode = "all";
+				visible = true;
+				break;
+			case "current":
+				mode = "current";
+				visible = true;
+				break;
+			default:
+				return undefined;
+		}
+		render(ctx);
+		persist();
+		return visible ? `shown (${mode})` : "hidden";
+	}
+
+	// --- lifecycle -----------------------------------------------------------
+
+	pi.on("session_start", async (_event, ctx) => {
+		restore(ctx);
+		render(ctx);
+	});
+
+	pi.on("session_tree", async (_event, ctx) => {
+		restore(ctx);
+		render(ctx);
+	});
+
+	// Re-read the plan after every turn so checked-off items reflect immediately
+	pi.on("turn_end", async (_event, ctx) => {
+		render(ctx);
+	});
+
+	pi.on("session_shutdown", async (_event, ctx) => {
+		// Do NOT touch the widget here: during /reload or quit the UI streams may
+		// already be destroyed (caused ERR_STREAM_DESTROYED). Pi discards the old
+		// runtime's widgets itself.
+		void ctx;
+	});
+
+	// Keep the transcript clean when state entries are restored/replayed
+	pi.registerEntryRenderer(STATE_TYPE, (entry, _context, theme) => {
+		const data = entry.data as Partial<WidgetState>;
+		return new Text(
+			theme.fg(
+				"dim",
+				data?.visible
+					? `plan-todo widget shown (${data.mode ?? "current"})`
+					: "plan-todo widget hidden",
+			),
+			0,
+			0,
+		);
+	});
+
+	// --- user controls -------------------------------------------------------
+
+	pi.registerCommand("plan-todo", {
+		description:
+			"Plan to-do widget (/plan-todo [show|hide|all|current|status]) — bare command toggles hide/show",
+		getArgumentCompletions: (prefix: string) => {
+			const options = ["show", "hide", "all", "current", "status"].filter(
+				(option) => option.startsWith(prefix),
+			);
+			return options.length > 0
+				? options.map((value) => ({ value, label: value }))
+				: null;
+		},
+		handler: async (args, ctx) => {
+			if (!ctx.hasUI) return;
+			const arg = args.trim().toLowerCase();
+
+			if (arg === "status") {
+				ctx.ui.notify(buildWidgetLines(ctx.cwd, mode).join(" | "), "info");
+				return;
+			}
+
+			if (!findPlanPath(ctx.cwd)) {
+				ctx.ui.notify(
+					`No ${PLAN_FILES.join(" or ")} found in ${ctx.cwd}`,
+					"warning",
+				);
+				return;
+			}
+
+			const result = apply(arg || "toggle", ctx);
+			if (result) ctx.ui.notify(`Plan to-do widget ${result}`, "info");
+		},
+	});
+
+	pi.registerShortcut("ctrl+shift+t", {
+		description: "Toggle plan to-do widget (hide/show)",
+		handler: async (ctx) => {
+			if (!ctx.hasUI || !findPlanPath(ctx.cwd)) return;
+			const result = apply("toggle", ctx);
+			if (result) ctx.ui.notify(`Plan to-do widget ${result}`, "info");
+		},
+	});
+}

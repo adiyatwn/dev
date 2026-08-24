@@ -1,2 +1,16 @@
 {"agent":"scout","task":"[redacted]","taskHash":"07ef5c2df89368079001b7390cffea47715950faf289cac973cb477e58cc4c71","ts":1786810558,"status":"ok","duration":95784}
 {"agent":"scout","task":"[redacted]","taskHash":"a2e888a2207e9d64f1c4983409f8d843f0549bbbfa4bf266f7c8bd0e4f0446ef","ts":1786810616,"status":"ok","duration":53871}
+{"agent":"researcher","task":"[redacted]","taskHash":"6e1b9ec9b1c52c2cc356961e1411623dcb78e829a872eb97b5f468d162fda4f5","ts":1787410730,"status":"ok","duration":312628}
+{"agent":"researcher","task":"[redacted]","taskHash":"af508847652b1c00eb02502d7b41338dcbb4454602b8711c22676902e3a05ed3","ts":1787411944,"status":"ok","duration":326584}
+{"agent":"oracle","task":"[redacted]","taskHash":"50237dfa68b08e92bd4acbe654434e354dbee46fe817ec93f9a9e0ba0e3c8289","ts":1787413008,"status":"ok","duration":196715}
+{"agent":"researcher","task":"[redacted]","taskHash":"3885c0bc2411a23aad73119b3909878fa249d4f73802f9acb0133bad06a7d0ff","ts":1787541679,"status":"ok","duration":268569}
+{"agent":"worker","task":"[redacted]","taskHash":"56bd1e7db3f5624839214ae7c954d6526ba2734c1ffac370e3a91fce3d662d05","ts":1787541941,"status":"ok","duration":261353}
+{"agent":"oracle","task":"[redacted]","taskHash":"c4f848d1d86912c1aab890a6a44dfd83996d9c8ad1dd7c0e93e78d9acae2e970","ts":1787542254,"status":"ok","duration":313497}
+{"agent":"researcher","task":"[redacted]","taskHash":"7e7e69241807a259e01c37a27efb4592471f69d137381847b303a39445f24c5d","ts":1787543490,"status":"ok","duration":486184}
+{"agent":"worker","task":"[redacted]","taskHash":"20e85ba32714ef04681ec57933ea8027cdbba3d4e750ff526abcdedda5571cb1","ts":1787543906,"status":"ok","duration":415301}
+{"agent":"oracle","task":"[redacted]","taskHash":"c98e1f5ad4970b26980265dfaa4a6e6d6e12376a64469e57682a45d4440d5013","ts":1787544098,"status":"ok","duration":192319}
+{"agent":"researcher","task":"[redacted]","taskHash":"53633ace1ce23039497087130de6419927a86ee0914d62288385d120a3701752","ts":1787545202,"status":"error","duration":19160,"exit":1}
+{"agent":"oracle","task":"[redacted]","taskHash":"174039b5a453d1e69a759160c3b6e07624a8e988cfaa784db96bdb06aeac236e","ts":1787545278,"status":"ok","duration":94927}
+{"agent":"worker","task":"[redacted]","taskHash":"5675954387055c87c7790da08dfed0e686513e22f5b45634d8ff246987cc3d2f","ts":1787576100,"status":"ok","duration":192945}
+{"agent":"oracle","task":"[redacted]","taskHash":"a5768e3595cfa8eb4cb7965165a242dbd871ed65133c9116e144e4bc3287eb00","ts":1787576170,"status":"error","duration":69599,"exit":1}
+{"agent":"worker","task":"[redacted]","taskHash":"cd222e2795c9319c5d97dbd4489afd9b0219020f2b11270e97b86d1472b5a3e5","ts":1787576398,"status":"error","duration":41896,"exit":1}

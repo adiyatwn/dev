@@ -10,5 +10,6 @@
   "defaultProvider": "cline",
   "defaultModel": "stealth/ox-alpha",
   "defaultThinkingLevel": "high",
-  "theme": "catppuccin"
+  "theme": "catppuccin",
+  "quietStartup": true
 }

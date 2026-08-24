@@ -182,8 +182,8 @@ function sudoValidate(password: string): Promise<boolean> {
 // ---------------------------------------------------------------------------
 
 export default function (pi: ExtensionAPI) {
-	pi.on("session_start", (_event, ctx) => {
-		if (ctx.hasUI) ctx.ui.notify("🔒 sudo-prompt active", "info");
+	pi.on("session_start", (_event, _ctx) => {
+		// notification removed for quieter startup
 	});
 
 	pi.on("session_shutdown", async () => {

@@ -6,3 +6,5 @@
 .config/pi/free*.json
 .config/pi/free.log
 .config/pi/web-search-cache/
+.config/tmux/plugins/
+.config/pi/agent/missions/
